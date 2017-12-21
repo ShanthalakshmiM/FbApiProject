@@ -10,10 +10,11 @@ package com.fb.api;
  * @author HP
  */
 public class Constants {
-    public static final String MY_ACCESS_TOKEN = "XXXXXXXX";
-    public static final String APP_SECRET = "XXXXXX";
-    public static final String PAGE_ACCESS_TOKEN = "XXXXXX";
+    public static final String MY_ACCESS_TOKEN = "XXXXX";
+    public static final String APP_ID = "XXXXX";
+    public static final String APP_SECRET = "XXXXX";
+    public static final String PAGE_ACCESS_TOKEN = "XXXXX";
     public static final String REDIRECT_URI = "http://localhost:8080/Project/Info";
-    public static final String PAGE_ID = "XXXXXX";
+    public static final String PAGE_ID = "XXXXX";
     public static String post_id = null;
 }

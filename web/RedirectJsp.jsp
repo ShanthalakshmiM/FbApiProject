@@ -13,9 +13,13 @@
     </head>
     <body>
         <%
-                Object id = request.getAttribute("convId");
+                Object id = request.getAttribute("conv");
+                Object cmnts = request.getAttribute("cmnts");
+                Object msg_id = request.getAttribute("result");
         %>
             
-        <p> <%= id %> </p>
+      <p> <%= id %> </p> <br/> 
+        <p> <%= cmnts %> </p>
+        <p> Message Details : <%= msg_id %> </p> <br/>
     </body>
 </html>

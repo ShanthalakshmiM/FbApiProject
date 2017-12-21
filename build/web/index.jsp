@@ -18,12 +18,16 @@
         </form>
         <form action="<%=request.getContextPath()%>/myServlet" method="get">
            Enter the text to post <input type="text" name ="StrPost" />  <br/>
-            <input type="submit" name="btPost" value="Post to your page"/> <br/>
-            <input type="submit" name="btGetMsg" value="Get messages"/> <br/>
-            Enter the message to be sent <input type="text" name="StrMsg"/><br/>
-            <input type="submit" name="btSendMsg" value="Send Message"/><br/>
-            <input type="submit" name="btGetCmt" value="Get Comments"/><br/>
+            <input type="submit" name="btnPost" value="Post to your page"/> <br/>
+            <input type="submit" name="btnGetMsg" value="Get messages"/> <br/>
+            
+            
+            <input type="submit" name="btnGetCmt" value="Get Comments"/><br/>
             
         </form>
+        <form action="<%=request.getContextPath()%>/index">
+               Enter the message to be sent <input type="text" name="StrMsg"/><br/>
+               <input type="submit" name="btnSendMsg" value="Send Message"/><br/>
+           </form>
     </body>
 </html>
