@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.fb.api;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author HP
  */
-public class myServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/test"})
+public class test extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,7 +33,15 @@ public class myServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
-           
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet test</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet test at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 
@@ -48,34 +57,7 @@ public class myServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       // processRequest(request, response);
-       String VERIFY_TOKEN = "Shantha";
-       
-       if(request.getParameter("btnPost")!=null){
-           String message = request.getParameter("StrPost");
-           Activities.makePost(message);
-       }
-       if(request.getParameter("btnGetMsg")!= null){
-           String conv = Activities.getConversations();
-         
-           request.setAttribute("conv", conv);
-           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
-       }
-//       if(request.getParameter("btnSendMsg")!=null){
-//           String msg = request.getParameter("StrMsg");
-//           SendMessage.sendMsg(request.getParameter(msg));
-//          
-//       }
-       if(request.getParameter("btnGetCmt")!=null){
-           
-           String cmnts = Activities.getComments();
-           request.setAttribute("cmnts", cmnts);
-           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
-           
-       }
-//       if(request.getParameter("hub.mode") == "subscribe" && request.getParameter("hub.token") == VERIFY_TOKEN) {
-//           response.getWriter().write(request.getParameter("hub.challenge"));
-//       }
+        processRequest(request, response);
     }
 
     /**

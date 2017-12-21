@@ -19,6 +19,8 @@ import com.restfb.types.GraphResponse;
 import com.restfb.types.Message;
 import com.restfb.types.Post;
 import com.restfb.types.User;
+import com.restfb.types.send.IdMessageRecipient;
+import com.restfb.types.send.SendResponse;
 import java.util.List;
 
 /**
@@ -26,32 +28,36 @@ import java.util.List;
  * @author HP
  */
 public class Activities {
-    static String recipient_id = "1093481367411780";
+    static String recipient_id;
    static  FacebookClient fbClient = new DefaultFacebookClient(Constants.PAGE_ACCESS_TOKEN);
     public static void makePost(String fbmessage){
         
         FacebookType postResponse = fbClient.publish(Constants.PAGE_ID+"/feed", FacebookType.class, Parameter.with("message", fbmessage));
         Constants.post_id = postResponse.getId();
     }
-    public static void getComments(){
+    public static String getComments(){
+        String cmnts = new String();
+        int i =0;
        Connection<Post> pageFeed = fbClient.fetchConnection(Constants.PAGE_ID +"/feed",Post.class);
        for(List<Post> feed :pageFeed){
            for(Post post : feed){
-               getAllPostComments(post.getId());
-               
+              String temp = getAllPostComments(post.getId());
+               cmnts += temp;
            }
        }
-        
+        return cmnts;
     }
-    public static void getAllPostComments(String postId){
+    public static String getAllPostComments(String postId){
+        String res = new String();
         Connection<Comment> cmntDetails = fbClient.fetchConnection(postId+"/comments", Comment.class, Parameter.with("fields", "message,from{id,name}"));
         if(cmntDetails != null){
             List<Comment> cmntList = cmntDetails.getData();
             for(Comment comment : cmntList){
-                String temp =comment.getId()+ ": "+comment.getMessage();
+                 res =comment.getFrom().getName()+ ": "+comment.getMessage();
                 
             }
         }
+        return res;
         
     }
     public static String getConversations(){
@@ -70,12 +76,14 @@ public class Activities {
                 //res = res+m.getMessage();
                     
                 //}
-              res = res+messages;
+                
+             // res = res+messages;
+               
                 List<Message> data = messages.getData();
                for(int i=0;i<data.size();i++){
                    Message m = data.get(i);
                    String text = m.getMessage();
-                   //res= m.getFrom().getName()+": "+text;
+                  res += m.getFrom().getName()+": "+text;
                    recipient_id = m.getFrom().getId();
                }
                 
@@ -84,6 +92,20 @@ public class Activities {
         }
         return res;
     }
-    
+    public static String sendMessage(String senderId, String message){
+        String res = new String();
+        Message msg = new Message();
+        msg.setMessage(message);
+        IdMessageRecipient recipient = new IdMessageRecipient(senderId);
+        
+        SendResponse resp = fbClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient), Parameter.with("message", msg));
+        if(resp.isSuccessful()){
+            res = resp.getMessageId();
+        }
+        else
+            res = "Not Success";
+        System.out.println(res);
+        return res;
+    }
     
 }
