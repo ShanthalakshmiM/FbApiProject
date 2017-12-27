@@ -15,6 +15,6 @@ public class Constants {
     public static final String APP_SECRET = "XXXX";
     public static String PAGE_ACCESS_TOKEN = "XXXXX";
     public static final String REDIRECT_URI = "XXXX";
-    public static String PAGE_ID = "200864727141137";
+    public static String PAGE_ID = "XXXXX";
     public static String post_id = null;
 }
