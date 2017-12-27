@@ -4,6 +4,7 @@
     Author     : HP
 --%>
 
+<%@page import="com.fb.api.Constants"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,22 +13,14 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form action="<%= request.getContextPath()%>/Info" >
-            <input type="submit" value="Go"/>
+        <div>
+            <center>
+        <form action="<%= request.getContextPath()%>/login" method="get" >
+            <a href="https://www.facebook.com/dialog/oauth?client_id=<%= Constants.APP_ID%>&redirect_uri=<%= Constants.REDIRECT_URI%>&scope=email,user_friends,manage_pages,read_page_mailboxes,publish_actions" > <img src="./images/facebookLoginButton.jpg"/> </a>
             
         </form>
-        <form action="<%=request.getContextPath()%>/myServlet" method="get">
-           Enter the text to post <input type="text" name ="StrPost" />  <br/>
-            <input type="submit" name="btnPost" value="Post to your page"/> <br/>
-            <input type="submit" name="btnGetMsg" value="Get messages"/> <br/>
-            
-            
-            <input type="submit" name="btnGetCmt" value="Get Comments"/><br/>
-            
-        </form>
-        <form action="<%=request.getContextPath()%>/index">
-               Enter the message to be sent <input type="text" name="StrMsg"/><br/>
-               <input type="submit" name="btnSendMsg" value="Send Message"/><br/>
-           </form>
+            </center>   
+        </div>
+        
     </body>
 </html>

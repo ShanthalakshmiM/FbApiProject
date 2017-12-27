@@ -6,11 +6,16 @@
 package com.fb.api;
 
 import com.restfb.DefaultJsonMapper;
+import com.restfb.Parameter;
+import com.restfb.types.GraphResponse;
+import com.restfb.types.send.IdMessageRecipient;
+import com.restfb.types.send.Message;
 import com.restfb.types.webhook.WebhookEntry;
 import com.restfb.types.webhook.WebhookObject;
 import com.restfb.types.webhook.messaging.MessagingItem;
 import java.io.IOException;
 import java.io.PrintWriter;
+import static java.lang.System.out;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,7 +41,8 @@ public class index extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
+        String check = "before try";
+        try(PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
 //            String temp = "xxx";
 //            out.println(temp);
@@ -51,13 +57,14 @@ public class index extends HttpServlet {
 //            out.println(temp);
 //            out.println("</body>");
 //            out.println("</html>");
+                check = "before webhook";
             if((request.getParameter("hub.verify_token").equals("Shantha")) && 
                         (request.getParameter("hub.mode").equals("subscribe"))){
                         out.write(request.getParameter("hub.challenge"));
                     } else
                 out.println("WRONG TOKEN!");
              //   request.getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
-             
+             check = "after webhook";
              
              String result = new String();
         String message = request.getParameter("StrMsg");
@@ -65,16 +72,35 @@ public class index extends HttpServlet {
         DefaultJsonMapper mapper = new DefaultJsonMapper();
         WebhookObject object = mapper.toJavaObject(body, WebhookObject.class);
         
+        check = "before sending";
         for(WebhookEntry entry : object.getEntryList()){
             if(!entry.getMessaging().isEmpty()){
                 for(MessagingItem item : entry.getMessaging()){
                     String senderId = item.getSender().getId();
-                     result += Activities.sendMessage(senderId, message);
+                    check = "inside sending";
+                    IdMessageRecipient recpient = new IdMessageRecipient((senderId));
+                    
+                    if(item.getMessage() != null){
+                        Message msg = new Message("Hello");
+                        
+                       GraphResponse resp= Activities.fbClient.publish("me/messages", GraphResponse.class , Parameter.with("recipient", recpient), Parameter.with("message", msg));
+                       
+                       if(resp.isSuccess()){
+                           out.println("Success "+resp.getId());
+                       }
+                       else
+                           out.println("Failure");
+                    }
                 }
             }
         }
+        check = "after sending";
+        out.println(check);
         request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
                 }
+        catch(Exception e){
+            out.println(e.toString());
+        }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

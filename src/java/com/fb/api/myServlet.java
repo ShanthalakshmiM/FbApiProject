@@ -53,7 +53,10 @@ public class myServlet extends HttpServlet {
        
        if(request.getParameter("btnPost")!=null){
            String message = request.getParameter("StrPost");
-           Activities.makePost(message);
+           String status = Activities.makePost(message);
+           
+           request.setAttribute("status", status);
+           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
        }
        if(request.getParameter("btnGetMsg")!= null){
            String conv = Activities.getConversations();
