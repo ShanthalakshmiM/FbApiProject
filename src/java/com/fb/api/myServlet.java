@@ -51,31 +51,42 @@ public class myServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
        // processRequest(request, response);
+       
+       //for webhook verification
        String VERIFY_TOKEN = "Shantha";
+       
        String stringToJsp = new String();
+       //button click for posting message
        if(request.getParameter("btnPost")!=null){
            String message = request.getParameter("StrPost");
+           //call function to post on faceboook
            stringToJsp = Activities.makePost(message);
            if(stringToJsp != null){
+               //passing values to jsp page
            request.getSession().setAttribute("result", stringToJsp);
            request.getRequestDispatcher("/StringResponses.jsp").forward(request, response);
           }
        }
+       // button click action for get messages
        if(request.getParameter("btnGetMsg")!= null){
+           //function call
            JSONArray messages = Activities.getConversations();
             stringToJsp = messages.toString();
            
          if(stringToJsp != null){
-           
+           // passing vlue to jsp
            request.setAttribute("result", stringToJsp);
            request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
          }
        }
 
+       //
        if(request.getParameter("btnGetCmnt")!=null){
+           //function call
            JSONArray cmnts = Activities.getAllPostComments();
            stringToJsp = cmnts.toString();
            if(stringToJsp != null){
+               //passing values to jsp
            request.setAttribute("result",stringToJsp);
            request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
            }

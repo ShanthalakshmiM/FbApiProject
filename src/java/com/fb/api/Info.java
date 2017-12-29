@@ -39,25 +39,26 @@ public class Info extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
+            // faceboo client with access token of logged in user
             FacebookClient fbClient = new DefaultFacebookClient(Constants.MY_ACCESS_TOKEN);
-        User user = fbClient.fetchObject("me", User.class);
-        System.out.println(user.getAbout());
-        System.out.println(user.getEmail());
-        System.out.println(user.getFirstName());
-        System.out.println(user.getLastName());
-        
+            User user = fbClient.fetchObject("me", User.class);
+            System.out.println(user.getAbout());
+            System.out.println(user.getEmail());
+            System.out.println(user.getFirstName());
+            System.out.println(user.getLastName());
+
             //out.println(user.getAbout());
-           // out.println(user.getEmail());
+            // out.println(user.getEmail());
             out.println(user.getFirstName());
             out.println(user.getName());
             out.println(user.getGender());
-            out.println("<title>Servlet Info</title>");            
+            out.println("<title>Servlet Info</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet Info at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
-            
+
         }
     }
 
@@ -74,7 +75,7 @@ public class Info extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        
+
     }
 
     /**

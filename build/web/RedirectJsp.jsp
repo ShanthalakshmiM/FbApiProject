@@ -4,6 +4,7 @@
     Author     : HP
 --%>
 
+<%@page import="com.fb.api.Constants"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -38,7 +39,7 @@
     </style>
     <body>
         <div class="header"> 
-            <h3 align="right" style="padding-right: 15px">Logged in as</h3>  
+            <h3 align="right" style="padding-right: 15px">Logged in as <%= Constants.MY_ACCESS_TOKEN %></h3>  
         </div>
     <center>
       
@@ -46,8 +47,11 @@
             var messages = ${result};
             document.writeln("<textarea id = 'textarea'>");
             for (var i = 0; i < messages.length; i++) {
+                if(messages[i].postContent != null){
+                    document.writeln("Post Message : "+messages[i].postContent);
+                }
                 if(messages[i].sender!= null || messages[i].content != null)                    
-                    document.writeln(messages[i].sender + " : " + messages[i].content);
+                    document.writeln(messages[i].sender + " : " + messages[i].content+"\n");
 
             }
             document.write("</textarea>");

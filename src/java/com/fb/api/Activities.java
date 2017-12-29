@@ -34,13 +34,17 @@ import org.json.JSONObject;
 public class Activities {
 
     static String recipient_id;
+    
+    //client with page access token 
     static FacebookClient fbClient = new DefaultFacebookClient(Constants.PAGE_ACCESS_TOKEN);
 
     public static String makePost(String fbmessage) {
-        String postStatus = "not yet posted";
+        String postStatus = new String();
+        //publish post with page ID and get post ID from response
         FacebookType postResponse = fbClient.publish(Constants.PAGE_ID + "/feed", FacebookType.class, Parameter.with("message", fbmessage));
 
         if (postResponse.getId() != null || postResponse.getId().equals("")) {
+
             Constants.post_id = postResponse.getId();
             postStatus = "Status posted successfully in your page";
         }
@@ -48,33 +52,38 @@ public class Activities {
     }
 
     public static JSONArray getAllPostComments() {
+        //to hold the comments of all posts
         JSONArray receivedCmnts = new JSONArray();
+        //fetch all the posts
         Connection<Post> pageFeed = fbClient.fetchConnection(Constants.PAGE_ID + "/feed", Post.class);
         for (List<Post> feed : pageFeed) {
             for (Post post : feed) {
+                //for ech post
                 JSONObject cmnts = new JSONObject();
+                //fetch comments of ech post
+               
+                cmnts = getComments(post.getId(),post.getMessage());
                 
-                cmnts = getComments(post.getId());
-               // if(cmnts.isNull("cmnts.sender"))
                 receivedCmnts.put(cmnts);
             }
         }
         return receivedCmnts;
     }
-   
-    public static JSONObject getComments(String postId) {
+
+    public static JSONObject getComments(String postId, String postContent) {
         JSONObject cmnts = new JSONObject();
         Connection<Comment> cmntDetails = fbClient.fetchConnection(postId + "/comments", Comment.class, Parameter.with("fields", "message,from{id,name}"));
+      
         if (cmntDetails != null) {
             List<Comment> cmntList = cmntDetails.getData();
-            
+
             for (Comment comment : cmntList) {
-                
+                //fetch sender name and message
                 try {
-                    
-                        cmnts.put("sender", comment.getFrom().getName());
-                        cmnts.put("content", comment.getMessage());
-                    
+                    cmnts.put("postContent", postContent);
+                    cmnts.put("sender", comment.getFrom().getName());
+                    cmnts.put("content", comment.getMessage());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -88,6 +97,7 @@ public class Activities {
     public static JSONArray getConversations() {
         String id = new String();
         JSONArray receivedMsgs = new JSONArray();
+        //fetch users sent message to your page
         Connection<Conversation> conversations = fbClient.fetchConnection("me/conversations", Conversation.class);
         for (List<Conversation> conversatioPage : conversations) {
             for (Conversation convo : conversatioPage) {

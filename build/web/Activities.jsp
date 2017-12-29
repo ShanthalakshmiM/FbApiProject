@@ -41,7 +41,7 @@
     <body> <center>
         <div>
             <div class="header" >
-                <h3 align="right" style="padding-right: 15px" class="text-white">Communicate with facebook</h3>      
+                <h3 align="right" style="padding-right: 15px" class="text-white">Communicate with facebook<%= session.getAttribute("username")%></h3>      
             </div>
             <div class="body">
                 <form action="<%=request.getContextPath()%>/myServlet" method="get">
@@ -56,6 +56,7 @@
 
                     </div>
                 </form>
+                    <!-- display textbox to get post message -->
                 <script type="text/javascript">
                     function add() {
                         var element = document.createElement("input");
@@ -64,11 +65,13 @@
                         var spanvar = document.getElementById("myspan");
                         spanvar.appendChild(element);
                        var br  = document.createElement('br');
+                       var br2 = document.createElement('br');
                        spanvar.appendChild(br);
-                       
+                       spanvar.appendChild(br2);
                         var element = document.createElement("input");
                         element.setAttribute("type", "submit");
                         element.setAttribute("name", "btnPost");
+                        element.setAttribute("value","Post");
                         element.setAttribute("class", "btn btn-default");
                         spanvar.appendChild(element);
                     }
@@ -76,6 +79,7 @@
                 </script>
 
             </div>
+                   
         </div>
 
     </center>

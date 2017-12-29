@@ -5,6 +5,9 @@
  */
 package com.fb.api;
 
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.types.User;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -67,10 +70,10 @@ public class login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        
+
         String accessToken = new String();
-        
+        String username = new String();
+
         String outputString = new String();
         try {
             String rid = request.getParameter("request_ids");
@@ -86,7 +89,7 @@ public class login extends HttpServlet {
                     URL url;
                     //hit url to get access token
                     try {
-                        
+
                         url = new URL("https://graph.facebook.com/oauth/access_token?client_id=" + Constants.APP_ID + "&redirect_uri=" + Constants.REDIRECT_URI + "&client_secret=" + Constants.APP_SECRET + "&code=" + code);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -124,18 +127,24 @@ public class login extends HttpServlet {
                 }
                 //save access token for further use
                 Constants.MY_ACCESS_TOKEN = accessToken;
-
+               //  username = getUserName();
                
             }
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        request.getSession().setAttribute("accessToken", accessToken);
+        request.getSession().setAttribute("username",username );
         request.getRequestDispatcher("Activities.jsp").forward(request, response);
     }
 
-
+    public String getUserName() {
+        FacebookClient fbclient = new DefaultFacebookClient(Constants.MY_ACCESS_TOKEN);
+        String username = new String();
+        User user = fbclient.fetchObject("me", User.class);
+        username = user.getName();
+        return username;
+    }
 
     /**
      * Handles the HTTP <code>POST</code> method.
