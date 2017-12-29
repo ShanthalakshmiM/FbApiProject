@@ -67,9 +67,10 @@ public class login extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String respForPageAccess = "initialized";
-        String accessToken = "initialized";
-        String accessToken_long = "initialized";
+        
+        
+        String accessToken = new String();
+        
         String outputString = new String();
         try {
             String rid = request.getParameter("request_ids");
@@ -78,12 +79,14 @@ public class login extends HttpServlet {
             } else {
                 String code = request.getParameter("code");
 
-                //accessToken = getAccessToken(code);
+                //get Response 
                 if (code == null || code.equals("")) {
                     throw new RuntimeException("Error: Code is null");
                 } else {
                     URL url;
+                    //hit url to get access token
                     try {
+                        
                         url = new URL("https://graph.facebook.com/oauth/access_token?client_id=" + Constants.APP_ID + "&redirect_uri=" + Constants.REDIRECT_URI + "&client_secret=" + Constants.APP_SECRET + "&code=" + code);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -91,7 +94,7 @@ public class login extends HttpServlet {
                     }
                     URLConnection fbConnection;
                     StringBuffer b = null;
-
+                    //read the response
                     try {
                         fbConnection = url.openConnection();
                         BufferedReader in;
@@ -108,6 +111,7 @@ public class login extends HttpServlet {
                         throw new RuntimeException("Unable to connect with Facebook "
                                 + e);
                     }
+                    //extract access token alone from response
                     if (outputString.indexOf("access_token") != -1) {
                         accessToken = outputString.substring(outputString.indexOf(":") + 1, outputString.indexOf(","));
                     }
@@ -118,98 +122,20 @@ public class login extends HttpServlet {
                     }
 
                 }
+                //save access token for further use
                 Constants.MY_ACCESS_TOKEN = accessToken;
 
                
             }
-            //accessToken_long = getLongLivedAT(accessToken);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        request.getSession().setAttribute("res", respForPageAccess);
-        request.getSession().setAttribute("accessToken_long", accessToken_long);
         request.getSession().setAttribute("accessToken", accessToken);
         request.getRequestDispatcher("Activities.jsp").forward(request, response);
     }
 
-    public String getAccessToken(String code) {
-        String acc_token = new String();
-        String outputString = new String();
-        if (code == null || code.equals("")) {
-            throw new RuntimeException("Error: Code is null");
-        } else {
-            URL url;
-            try {
-                url = new URL("https://graph.facebook.com/oauth/access_token?client_id=" + Constants.APP_ID + "&redirect_uri=" + Constants.REDIRECT_URI + "&client_secret=" + Constants.APP_SECRET + "&code=" + code);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                throw new RuntimeException("Invlaid code");
-            }
-            URLConnection fbConnection;
-            StringBuffer b = null;
 
-            try {
-                fbConnection = url.openConnection();
-                BufferedReader in;
-                in = new BufferedReader(new InputStreamReader(
-                        fbConnection.getInputStream()));
-                String inputLine;
-
-                while ((inputLine = in.readLine()) != null) {
-                    outputString = outputString + inputLine;
-                }
-                in.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Unable to connect with Facebook "
-                        + e);
-            }
-            if (outputString.indexOf("access_token") != -1) {
-                acc_token = outputString.substring(outputString.indexOf(":") + 1, outputString.indexOf(","));
-            }
-
-            if (outputString.startsWith("{")) {
-                throw new RuntimeException("ERROR: Access Token Invalid: "
-                        + acc_token);
-            }
-
-        }
-        return acc_token;
-    }
-
-    public String getLongLivedAT(String shortLivedAT) {
-        String longLivedAT = new String();
-        try {
-            URL url = new URL("https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=" + Constants.APP_ID + "&client_secret=" + Constants.APP_SECRET + "&fb_exchange_token=" + shortLivedAT);
-            URLConnection conn = url.openConnection();
-            BufferedReader br;
-            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            String outputString = new String();
-            while ((inputLine = br.readLine()) != null) {
-                outputString = outputString + inputLine;
-            }
-            longLivedAT = outputString.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return longLivedAT;
-    }
-
-    public String getPageAccessToken(String acc_token) throws IOException {
-        URL url = new URL("https://graph.facebook.com/me/accounts?access+token=" + acc_token + "");
-        URLConnection conn = url.openConnection();
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputString;
-        String res = new String();
-        while ((inputString = in.readLine()) != null) {
-            res = res + inputString;
-        }
-        in.close();
-        return res;
-    }
 
     /**
      * Handles the HTTP <code>POST</code> method.

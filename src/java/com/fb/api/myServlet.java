@@ -7,10 +7,12 @@ package com.fb.api;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.JSONArray;
 
 /**
  *
@@ -50,35 +52,36 @@ public class myServlet extends HttpServlet {
             throws ServletException, IOException {
        // processRequest(request, response);
        String VERIFY_TOKEN = "Shantha";
-       
+       String stringToJsp = new String();
        if(request.getParameter("btnPost")!=null){
            String message = request.getParameter("StrPost");
-           String status = Activities.makePost(message);
-           
-           request.setAttribute("status", status);
-           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
+           stringToJsp = Activities.makePost(message);
+           if(stringToJsp != null){
+           request.getSession().setAttribute("result", stringToJsp);
+           request.getRequestDispatcher("/StringResponses.jsp").forward(request, response);
+          }
        }
        if(request.getParameter("btnGetMsg")!= null){
-           String conv = Activities.getConversations();
-         
-           request.setAttribute("conv", conv);
-           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
-       }
-//       if(request.getParameter("btnSendMsg")!=null){
-//           String msg = request.getParameter("StrMsg");
-//           SendMessage.sendMsg(request.getParameter(msg));
-//          
-//       }
-       if(request.getParameter("btnGetCmt")!=null){
+           JSONArray messages = Activities.getConversations();
+            stringToJsp = messages.toString();
            
-           String cmnts = Activities.getComments();
-           request.setAttribute("cmnts", cmnts);
+         if(stringToJsp != null){
+           
+           request.setAttribute("result", stringToJsp);
            request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
+         }
+       }
+
+       if(request.getParameter("btnGetCmnt")!=null){
+           JSONArray cmnts = Activities.getAllPostComments();
+           stringToJsp = cmnts.toString();
+           if(stringToJsp != null){
+           request.setAttribute("result",stringToJsp);
+           request.getRequestDispatcher("/RedirectJsp.jsp").forward(request, response);
+           }
            
        }
-//       if(request.getParameter("hub.mode") == "subscribe" && request.getParameter("hub.token") == VERIFY_TOKEN) {
-//           response.getWriter().write(request.getParameter("hub.challenge"));
-//       }
+
     }
 
     /**

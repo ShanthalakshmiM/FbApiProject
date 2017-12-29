@@ -22,7 +22,10 @@ import com.restfb.types.User;
 import com.restfb.types.send.IdMessageRecipient;
 import com.restfb.types.send.SendResponse;
 import com.sun.corba.se.spi.presentation.rmi.StubAdapter;
+import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -34,104 +37,79 @@ public class Activities {
     static FacebookClient fbClient = new DefaultFacebookClient(Constants.PAGE_ACCESS_TOKEN);
 
     public static String makePost(String fbmessage) {
-        String postStatus = new String();
+        String postStatus = "not yet posted";
         FacebookType postResponse = fbClient.publish(Constants.PAGE_ID + "/feed", FacebookType.class, Parameter.with("message", fbmessage));
-        
-        if(postResponse.getId()!=null || postResponse.getId().equals("")){
+
+        if (postResponse.getId() != null || postResponse.getId().equals("")) {
             Constants.post_id = postResponse.getId();
             postStatus = "Status posted successfully in your page";
         }
-       return postStatus;
+        return postStatus;
     }
 
-    public static String getComments() {
-        String cmnts = new String();
-        int i = 0;
+    public static JSONArray getAllPostComments() {
+        JSONArray receivedCmnts = new JSONArray();
         Connection<Post> pageFeed = fbClient.fetchConnection(Constants.PAGE_ID + "/feed", Post.class);
         for (List<Post> feed : pageFeed) {
             for (Post post : feed) {
-                String temp = getAllPostComments(post.getId());
-                cmnts += temp;
+                JSONObject cmnts = new JSONObject();
+                
+                cmnts = getComments(post.getId());
+               // if(cmnts.isNull("cmnts.sender"))
+                receivedCmnts.put(cmnts);
             }
         }
-        return cmnts;
+        return receivedCmnts;
     }
-
-    public static String getAllPostComments(String postId) {
-        String res = new String();
+   
+    public static JSONObject getComments(String postId) {
+        JSONObject cmnts = new JSONObject();
         Connection<Comment> cmntDetails = fbClient.fetchConnection(postId + "/comments", Comment.class, Parameter.with("fields", "message,from{id,name}"));
         if (cmntDetails != null) {
             List<Comment> cmntList = cmntDetails.getData();
+            
             for (Comment comment : cmntList) {
-                res = comment.getFrom().getName() + ": " + comment.getMessage();
+                
+                try {
+                    
+                        cmnts.put("sender", comment.getFrom().getName());
+                        cmnts.put("content", comment.getMessage());
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
             }
         }
-        return res;
+        return cmnts;
 
     }
 
-    public static String getConversations() {
+    public static JSONArray getConversations() {
         String id = new String();
-        String res = new String();
-        int s = 0;
-        JsonMapper jsonMapper = new DefaultJsonMapper();
-        JsonObject obj = null;
+        JSONArray receivedMsgs = new JSONArray();
         Connection<Conversation> conversations = fbClient.fetchConnection("me/conversations", Conversation.class);
         for (List<Conversation> conversatioPage : conversations) {
             for (Conversation convo : conversatioPage) {
                 id = id + convo.getId();
                 Connection<Message> messages = fbClient.fetchConnection(id + "/messages", Message.class, Parameter.with("fields", "message, created_time, from, id"));
-                //  List<Message> data = jsonMapper.toJavaList(obj.get("comments").toString(), Message.class);
-                // for(Message m : data){
-                //res = res+m.getMessage();
-
-                //}
-                // res = res+messages;
-                List<Message> data = messages.getData();
-                for (int i = 0; i < data.size(); i++) {
-                    Message m = data.get(i);
-                    String text = m.getMessage();
-                    res += m.getFrom().getName() + ": " + text;
-                    recipient_id = m.getFrom().getId();
-                    
-                    
-                   
-
+                try {
+                    List<Message> data = messages.getData();
+                    for (int i = 0; i < data.size(); i++) {
+                        Message m = data.get(i);
+                        JSONObject msg = new JSONObject();
+                        msg.put("sender", m.getFrom().getName());
+                        msg.put("content", m.getMessage());
+                        receivedMsgs.put(msg);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-//                 String response = new String();
-//                    Message msg = new Message();
-//                    msg.setMessage("Hello Subi");
-//                    IdMessageRecipient recipient = new IdMessageRecipient(recipient_id);
-//
-//                    SendResponse resp = fbClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient), Parameter.with("message", msg));
-//                    if (resp.isSuccessful()) {
-//                        response = resp.getMessageId();
-//                    } else {
-//                        response = "Not Success";
-//                    }
-//                    res = res + response;
 
             }
-            //   msg = msg+"  list size"+String.valueOf(s);
-        }
-        return res;
-    }
 
-    public static String sendMessage(String senderId, String message) {
-        String response = new String();
-        Message msg = new Message();
-        msg.setMessage(message);
-        IdMessageRecipient recipient = new IdMessageRecipient(senderId);
-
-        SendResponse resp = fbClient.publish("me/messages", SendResponse.class, Parameter.with("recipient", recipient), Parameter.with("message", msg));
-        if (resp.isSuccessful()) {
-            response = resp.getMessageId();
-        } else {
-            response = "Not Success";
         }
-        System.out.println(response);
-        return response;
+        return receivedMsgs;
     }
 
 }
