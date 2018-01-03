@@ -39,8 +39,9 @@
     </style>
     <body>
         <div class="header"> 
-            <h3 align="right" style="padding-right: 15px">Logged in as <%= Constants.MY_ACCESS_TOKEN %></h3>  
+            <h3 align="right" style="padding-right: 15px">Logged in as </h3>  
         </div>
+       
     <center>
       
         <script>
@@ -54,6 +55,7 @@
                     document.writeln(messages[i].sender + " : " + messages[i].content+"\n");
 
             }
+            document.writeln(messages[0].convId);
             document.write("</textarea>");
         </script>
     </center>

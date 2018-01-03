@@ -83,7 +83,7 @@ public class index extends HttpServlet {
                     if(item.getMessage() != null){
                         Message msg = new Message("Hello");
                         
-                       GraphResponse resp= Activities.fbClient.publish("me/messages", GraphResponse.class , Parameter.with("recipient", recpient), Parameter.with("message", msg));
+                       GraphResponse resp= Activities.fbPageClient.publish("me/messages", GraphResponse.class , Parameter.with("recipient", recpient), Parameter.with("message", msg));
                        
                        if(resp.isSuccess()){
                            out.println("Success "+resp.getId());

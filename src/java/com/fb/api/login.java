@@ -7,23 +7,30 @@ package com.fb.api;
 
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
+import com.restfb.Parameter;
+import com.restfb.Version;
+import com.restfb.types.Page;
 import com.restfb.types.User;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import static java.lang.System.out;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -72,7 +79,10 @@ public class login extends HttpServlet {
             throws ServletException, IOException {
 
         String accessToken = new String();
-        String username = new String();
+        String username = "initialized";
+        
+        Properties prop = new Properties();
+        OutputStream output = new FileOutputStream("config.properties");
 
         String outputString = new String();
         try {
@@ -87,9 +97,10 @@ public class login extends HttpServlet {
                     throw new RuntimeException("Error: Code is null");
                 } else {
                     URL url;
+                    username = "inside else";
                     //hit url to get access token
                     try {
-
+                        username = "inside try";
                         url = new URL("https://graph.facebook.com/oauth/access_token?client_id=" + Constants.APP_ID + "&redirect_uri=" + Constants.REDIRECT_URI + "&client_secret=" + Constants.APP_SECRET + "&code=" + code);
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -116,34 +127,30 @@ public class login extends HttpServlet {
                     }
                     //extract access token alone from response
                     if (outputString.indexOf("access_token") != -1) {
+                        username = "getting access token";
                         accessToken = outputString.substring(outputString.indexOf(":") + 1, outputString.indexOf(","));
                     }
 
-                    if (outputString.startsWith("{")) {
+                    if (accessToken.startsWith("{")) {
+                        username = "error";
                         throw new RuntimeException("ERROR: Access Token Invalid: "
                                 + accessToken);
                     }
 
+                    //save access token for further use
+                    prop.setProperty("access_token", accessToken);
+                    prop.store(output, null);
+                    
+                    Constants.MY_ACCESS_TOKEN = accessToken;
                 }
-                //save access token for further use
-                Constants.MY_ACCESS_TOKEN = accessToken;
-               //  username = getUserName();
-               
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        request.getSession().setAttribute("username",username );
+        request.getSession().setAttribute("accessToken", accessToken);
+        request.getSession().setAttribute("user", username);
         request.getRequestDispatcher("Activities.jsp").forward(request, response);
-    }
-
-    public String getUserName() {
-        FacebookClient fbclient = new DefaultFacebookClient(Constants.MY_ACCESS_TOKEN);
-        String username = new String();
-        User user = fbclient.fetchObject("me", User.class);
-        username = user.getName();
-        return username;
     }
 
     /**

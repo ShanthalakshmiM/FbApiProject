@@ -60,7 +60,8 @@ public class myServlet extends HttpServlet {
        if(request.getParameter("btnPost")!=null){
            String message = request.getParameter("StrPost");
            //call function to post on faceboook
-           stringToJsp = Activities.makePost(message);
+         //  stringToJsp = Activities.makePost(message);
+          stringToJsp = Activities.postToPage(message);
            if(stringToJsp != null){
                //passing values to jsp page
            request.getSession().setAttribute("result", stringToJsp);
@@ -92,6 +93,7 @@ public class myServlet extends HttpServlet {
            }
            
        }
+       
 
     }
 
