@@ -1,41 +1,25 @@
 <%-- 
     Document   : index
-    Created on : Dec 18, 2017, 10:41:58 AM
+    Created on : Dec 11, 2017, 5:48:28 PM
     Author     : HP
 --%>
 
-<%@page import="com.fb.api.Constants"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%
+	FBConnection fbConnection = new FBConnection();
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <style>
-        body{
-            background-image: url("images/fbloginbckgrnd.jpg");
-        }
-        #parent{
-            display: table;
-            width: 100%;
-        }
-        #form{
-            padding: 0 5px 0 0;
-            vertical-align: -50%;
-            
-        }
-    </style>
-    <body
-        
-        <div id="parent">
-            <center>
-        <form action="<%= request.getContextPath()%>/login" method="get" id="form">
-            <a href="https://www.facebook.com/dialog/oauth?client_id=<%= Constants.APP_ID%>&redirect_uri=<%= Constants.REDIRECT_URI%>&scope=email,user_friends,manage_pages,read_page_mailboxes,publish_actions,user_about_me,email,user_posts" > <img src="./images/facebookLoginButton.jpg"/> </a>
-            
-        </form>
-            </center>   
-        </div>
-        
-    </body>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Java Facebook Login</title>
+</head>
+<body style="text-align: center; margin: 0 auto;">
+	<div
+		
+		<a href="<%=fbConnection.getFBAuthUrl()%>"> 
+		</a>
+	</div>
+</body>
 </html>
